@@ -17,7 +17,7 @@ pub struct Config {
 
     mapping_axis: HashMap<Axis, (Option<Key>, Option<Key>)>,
     states_axis: HashMap<Axis, AxisState>,
-    deadzones: HashMap<Axis, f64>
+    deadzones: HashMap<Axis, f32>
 }
 
 
@@ -28,7 +28,7 @@ impl Config {
         states_buttons: HashMap<Button, bool>,
         mapping_axis: HashMap<Axis, (Option<Key>, Option<Key>)>,
         states_axis: HashMap<Axis, AxisState>,
-        deadzones: HashMap<Axis, f64>
+        deadzones: HashMap<Axis, f32>
     ) -> Self {
         Config {
             name,
