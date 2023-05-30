@@ -33,7 +33,7 @@ fn axis_state_changed(
     current_state: &AxisState,
     axis_states: &HashMap<Axis, AxisState> 
 ) -> bool {
-    return axis_states.get(axis) == Some(current_state)
+    return axis_states.get(axis) != Some(current_state)
 }
 
 
