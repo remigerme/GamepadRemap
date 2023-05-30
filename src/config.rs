@@ -13,7 +13,7 @@ use crate::utils::{read_from_path, save_to_path};
 pub struct Config {
     name: String,
     mapping_buttons: HashMap<Button, Key>,
-    states_buttons: HashMap<Button, bool>,
+    pressed_buttons: HashMap<Button, bool>,
 
     mapping_axis: HashMap<Axis, (Option<Key>, Option<Key>)>,
     states_axis: HashMap<Axis, AxisState>,
@@ -25,7 +25,7 @@ impl Config {
     pub fn new(
         name: String,
         mapping_buttons: HashMap<Button, Key>,
-        states_buttons: HashMap<Button, bool>,
+        pressed_buttons: HashMap<Button, bool>,
         mapping_axis: HashMap<Axis, (Option<Key>, Option<Key>)>,
         states_axis: HashMap<Axis, AxisState>,
         deadzones: HashMap<Axis, f32>
@@ -33,7 +33,7 @@ impl Config {
         Config {
             name,
             mapping_buttons,
-            states_buttons,
+            pressed_buttons,
             mapping_axis,
             states_axis,
             deadzones
