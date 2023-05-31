@@ -30,11 +30,11 @@ impl Config {
         deadzones: HashMap<Axis, f32>
     ) -> Self {
         let mut pressed_buttons = HashMap::new();
-        for (button, _) in mapping_buttons {
+        for (&button, _) in &mapping_buttons {
             pressed_buttons.insert(button, false);
         }
         let mut states_axis = HashMap::new();
-        for (axis, _) in mapping_axis {
+        for (&axis, _) in &mapping_axis {
             states_axis.insert(axis, AxisState::Mid);
         }
         Config {
@@ -67,7 +67,7 @@ impl Config {
         &self.mapping_buttons
     }
 
-    pub fn maps_button_to(&self, button: Button, key: Key) {
+    pub fn maps_button_to(&mut self, button: Button, key: Key) {
         self.mapping_buttons.insert(button, key);
         self.pressed_buttons.insert(button, false);
     }
@@ -87,7 +87,7 @@ impl Config {
         &self.mapping_axis
     }
 
-    pub fn maps_axis_to(&self, axis: Axis, state: AxisState, key: Key) {
+    pub fn maps_axis_to(&mut self, axis: Axis, state: AxisState, key: Key) {
         let existing_bind = match self.mapping_axis.get(&axis) {
             Some(&b) => b,
             None => (None, None)
@@ -108,7 +108,7 @@ impl Config {
         }
     }
 
-    pub fn set_axis_state(&self, axis: Axis, axis_state: AxisState) {
+    pub fn set_axis_state(&mut self, axis: Axis, axis_state: AxisState) {
         self.states_axis.insert(axis, axis_state);
     }
 
@@ -116,7 +116,7 @@ impl Config {
         &self.deadzones
     }
 
-    pub fn set_deadzone(&self, axis: Axis, value: f32) {
+    pub fn set_deadzone(&mut self, axis: Axis, value: f32) {
         self.deadzones.insert(axis, value);
     }
 }
