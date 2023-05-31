@@ -1,8 +1,8 @@
-use std::collections::HashMap;
-
-use enigo::{Enigo, Key, KeyboardControllable};
+use enigo::{Enigo, KeyboardControllable};
 use gilrs::Axis;
 use serde::{Serialize, Deserialize};
+
+use crate::config::Config;
 
 
 const DEFAULT_DEADZONE: f32 = 0.1;
@@ -16,8 +16,8 @@ pub enum AxisState {
 }
 
 
-fn get_axis_state(axis: &Axis, value: f32, deadzones: &HashMap<Axis, f32>) -> AxisState {
-    let safe_deadzone = match deadzones.get(axis) {
+fn get_axis_state(axis: Axis, value: f32, config: &Config) -> AxisState {
+    let safe_deadzone = match config.get_deadzones().get(&axis) {
         Some(&d) => d,
         None => DEFAULT_DEADZONE
     };
@@ -32,21 +32,21 @@ fn get_axis_state(axis: &Axis, value: f32, deadzones: &HashMap<Axis, f32>) -> Ax
 
 
 fn axis_state_changed(
-    axis: &Axis,
-    current_state: &AxisState,
-    axis_states: &HashMap<Axis, AxisState> 
+    axis: Axis,
+    current_state: AxisState,
+    config: &Config
 ) -> bool {
-    return axis_states.get(axis) != Some(current_state)
+    return config.get_axis_state(axis) != current_state
 }
 
 
 fn update_key_axis(
     enigo: &mut Enigo,
-    axis: &Axis,
-    current_state: &AxisState,
-    mapping_axis: &HashMap<Axis, (Option<Key>, Option<Key>)>
+    axis: Axis,
+    current_state: AxisState,
+    config: &Config
 ) {
-    match mapping_axis.get(axis) {
+    match config.get_mapping_axis().get(&axis) {
         Some(&(key_min, key_max)) => {
             match current_state {
                 AxisState::Min => {
@@ -88,15 +88,13 @@ fn update_key_axis(
 
 pub fn update_axis(
     enigo: &mut Enigo,
-    axis: &Axis,
+    axis: Axis,
     value: f32,
-    mapping_axis: &HashMap<Axis, (Option<Key>, Option<Key>)>,
-    axis_states: &mut HashMap<Axis, AxisState>,
-    deadzones: &HashMap<Axis, f32>
+    config: &mut Config
 ) {
-    let current_state = get_axis_state(axis, value, deadzones);
-    if axis_state_changed(axis, &current_state, axis_states) {
-        update_key_axis(enigo, axis, &current_state, mapping_axis);
-        axis_states.insert(*axis, current_state);
+    let current_state = get_axis_state(axis, value, config);
+    if axis_state_changed(axis, current_state, config) {
+        update_key_axis(enigo, axis, current_state, config);
+        config.set_axis_state(axis, current_state);
     }
 }
