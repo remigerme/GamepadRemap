@@ -8,7 +8,7 @@ use serde::{Serialize, Deserialize};
 const DEFAULT_DEADZONE: f32 = 0.1;
 
 
-#[derive(Eq, Hash, PartialEq, Debug, Serialize, Deserialize)]
+#[derive(Eq, Hash, PartialEq, Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum AxisState {
     Min,
     Mid,
