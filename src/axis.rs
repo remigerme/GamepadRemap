@@ -5,6 +5,9 @@ use gilrs::Axis;
 use serde::{Serialize, Deserialize};
 
 
+const DEFAULT_DEADZONE: f32 = 0.1;
+
+
 #[derive(Eq, Hash, PartialEq, Debug, Serialize, Deserialize)]
 pub enum AxisState {
     Min,
@@ -13,17 +16,17 @@ pub enum AxisState {
 }
 
 
-fn get_axis_state(axis: &Axis, value: f32, deadzones: &HashMap<Axis, f32>) -> Option<AxisState> {
-    match deadzones.get(axis) {
-        Some(&deadzone) =>
-            if value < - deadzone {
-                Some(AxisState::Min)
-            } else if value > deadzone {
-                Some(AxisState::Max)
-            } else {
-                Some(AxisState::Mid)
-            },
-        None => None
+fn get_axis_state(axis: &Axis, value: f32, deadzones: &HashMap<Axis, f32>) -> AxisState {
+    let safe_deadzone = match deadzones.get(axis) {
+        Some(&d) => d,
+        None => DEFAULT_DEADZONE
+    };
+    if value < -safe_deadzone {
+        AxisState::Min
+    } else if value > safe_deadzone {
+        AxisState::Max
+    } else {
+        AxisState::Mid
     }
 }
 
@@ -92,13 +95,8 @@ pub fn update_axis(
     deadzones: &HashMap<Axis, f32>
 ) {
     let current_state = get_axis_state(axis, value, deadzones);
-    match current_state {
-        Some(current_state) => {
-            if axis_state_changed(axis, &current_state, axis_states) {
-                update_key_axis(enigo, axis, &current_state, mapping_axis);
-                axis_states.insert(*axis, current_state);
-            }
-        },
-        None => ()
+    if axis_state_changed(axis, &current_state, axis_states) {
+        update_key_axis(enigo, axis, &current_state, mapping_axis);
+        axis_states.insert(*axis, current_state);
     }
 }
